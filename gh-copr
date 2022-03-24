@@ -41,6 +41,44 @@ list_prs() {
   ' | column -t -s$'\t'
 }
 
+list_prs_that_need_my_review() {
+	GH_USER=$(gh api user --jq .login)
+	gh api graphql --cache=5m -F owner='{owner}' -F repo='{repo}' -f query='
+      query ($owner: String!, $repo: String!) {
+        repository(owner: $owner, name: $repo) {
+          pullRequests(first: 100, states: [OPEN]) {
+            nodes {
+              number
+              title
+              author {
+                login
+              }
+              reviewRequests (first: 2) {nodes {requestedReviewer {... on User {login}}}}
+              state
+              headRefName
+            }
+          }
+        }
+      }
+  ' -q '
+  .data.repository.pullRequests.nodes
+  | map(
+  		select(
+			.reviewRequests.nodes.[] 
+			| .requestedReviewer.login == "axkirillov"
+		)
+	)
+  ' | gomplate -d data=stdin:///in.json -i '
+  	{{- range ds "data" -}}
+      {{- .number | printf "#%d\t" -}}
+      {{- .title | printf "%s\t" -}}
+      {{- .headRefName | printf "%s\t" -}}
+      {{- .author.login | printf " by %s\t" -}}
+      {{- .state | printf "%s\n" -}}
+	{{- end -}}
+	' | column -t -s$'\t'
+}
+
 while test $# != 0; do
   case "$1" in
     --help|-h)
@@ -59,8 +97,10 @@ while test $# != 0; do
 done
 
 if [ -n "$assigned" ]; then
-# TODO 
-  exit
+	selected=$(fzf --ansi <<<"$(list_prs_that_need_my_review)")
+	[ -n "$selected" ] || exit 1
+	gh pr checkout "${selected%% *}"
+	exit
 fi
 
 # Make sure fzf is available
