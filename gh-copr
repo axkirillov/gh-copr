@@ -8,7 +8,7 @@ Display an interactive list of open PRs. The selected PR is checked out.
 Options:
     TODO: -a filter by assigned to you 
     --help      Show this message
-Dependencies: fzf
+Dependencies: fzf, gomplate
 EOF
 }
 
@@ -53,7 +53,7 @@ list_prs_that_need_my_review() {
               author {
                 login
               }
-              reviewRequests (first: 2) {nodes {requestedReviewer {... on User {login}}}}
+              reviewRequests (first: 10) {nodes {requestedReviewer {... on User {login}}}}
               state
               headRefName
             }
@@ -70,7 +70,7 @@ list_prs_that_need_my_review() {
 	)
   ' | gomplate -d data=stdin:///in.json -i '
   	{{- range ds "data" -}}
-      {{- .number | printf "#%d\t" -}}
+      {{- .number | printf "\033[0;32m#%d\033[0m\t" -}}
       {{- .title | printf "%s\t" -}}
       {{- .headRefName | printf "%s\t" -}}
       {{- .author.login | printf " by %s\t" -}}
