@@ -19,7 +19,7 @@ then
 ```
 gh copr
 ```
-or
+or to see prs that need your review
 ```
 gh copr -a
 ```
