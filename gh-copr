@@ -23,12 +23,6 @@ if ! type -p fzf >/dev/null; then
   exit 1
 fi
 
-# Make sure gomplate is available
-if ! type -p gomplate >/dev/null; then
-  echo "gomplate not found on the system" >&2
-  exit 1
-fi
-
 list_prs() {
   # shellcheck disable=SC2016
   gh api graphql --cache=5m -F owner='{owner}' -F repo='{repo}' -f query='
