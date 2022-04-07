@@ -6,7 +6,7 @@ help() {
 Usage: gh copr
 Display an interactive list of open PRs. The selected PR is checked out.
 Options:
-    -a filter prs that need your review 
+    -r filter prs that need your review 
     --help show this message
 Dependencies: fzf, gomplate
 EOF
