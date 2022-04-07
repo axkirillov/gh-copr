@@ -1,14 +1,15 @@
 # ghcopr
 Fuzzy find and checkout GitHub pull requests
 
-this is based on
+inspiration taken from
 https://github.com/mloberg/gh-prs
+https://github.com/AaronMoat/gh-reviews
 
 I added a -a flag to list prs that need my review
 
-this needs fzf and gomplate
+this needs fzf
 ```
-brew install fzf gomplate
+brew install fzf
 ```
 
 ```
@@ -21,5 +22,5 @@ gh copr
 ```
 or to see prs that need your review
 ```
-gh copr -a
+gh copr -r
 ```
