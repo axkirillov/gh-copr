@@ -17,6 +17,18 @@ if ! git rev-parse --git-dir > /dev/null 2>&1; then
 	exit 1 
 fi
 
+# Make sure fzf is available
+if ! type -p fzf >/dev/null; then
+  echo "fzf not found on the system" >&2
+  exit 1
+fi
+
+# Make sure gomplate is available
+if ! type -p gomplate >/dev/null; then
+  echo "gomplate not found on the system" >&2
+  exit 1
+fi
+
 list_prs() {
   # shellcheck disable=SC2016
   gh api graphql --cache=5m -F owner='{owner}' -F repo='{repo}' -f query='
@@ -106,12 +118,6 @@ if [ -n "$assigned" ]; then
 	[ -n "$selected" ] || exit 1
 	gh pr checkout "${selected%% *}"
 	exit
-fi
-
-# Make sure fzf is available
-if ! type -p fzf >/dev/null; then
-  echo "fzf not found on the system" >&2
-  exit 1
 fi
 
 selected=$(fzf --ansi <<<"$(list_prs)")
