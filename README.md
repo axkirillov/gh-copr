@@ -2,6 +2,7 @@
 Fuzzy find and checkout GitHub pull requests
 
 inspiration taken from
+
 https://github.com/mloberg/gh-prs
 
 https://github.com/AaronMoat/gh-reviews
