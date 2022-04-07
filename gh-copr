@@ -12,6 +12,11 @@ Dependencies: fzf, gomplate
 EOF
 }
 
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+	echo "not a git repository"
+	exit 1 
+fi
+
 list_prs() {
   # shellcheck disable=SC2016
   gh api graphql --cache=5m -F owner='{owner}' -F repo='{repo}' -f query='
