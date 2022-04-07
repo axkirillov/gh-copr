@@ -18,7 +18,7 @@ install with gh
 gh extension install axkirillov/gh-copr
 ```
 
-then, to list checkout all PRs in a repo 
+then, to list all PRs in a repo
 ```
 gh copr
 ```
