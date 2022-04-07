@@ -70,7 +70,7 @@ list_prs_that_need_my_review() {
               author {
                 login
               }
-              reviewRequests (first: 10) {nodes {requestedReviewer {... on User {login}}}}
+              reviewRequests (first: 20) {nodes {requestedReviewer {... on User {login}}}}
               state
               headRefName
             }
