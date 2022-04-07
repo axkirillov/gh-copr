@@ -8,7 +8,7 @@ Display an interactive list of open PRs. The selected PR is checked out.
 Options:
     -r filter prs that need your review 
     --help show this message
-Dependencies: fzf, gomplate
+Dependencies: fzf
 EOF
 }
 
