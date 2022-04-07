@@ -58,67 +58,55 @@ list_prs() {
   ' | column -t -s$'\t'
 }
 
-list_prs_that_need_my_review() {
-	GH_USER=$(gh api user --jq .login)
-	gh api graphql --cache=5m -F owner='{owner}' -F repo='{repo}' -f query='
-      query ($owner: String!, $repo: String!) {
-        repository(owner: $owner, name: $repo) {
-          pullRequests(first: 100, states: [OPEN]) {
-            nodes {
-              number
-              title
-              author {
-                login
-              }
-              reviewRequests (first: 20) {nodes {requestedReviewer {... on User {login}}}}
-              state
-              headRefName
-            }
-          }
-        }
-      }
-  ' -q '
-  .data.repository.pullRequests.nodes
-  | map(
-  		select(
-			.reviewRequests.nodes.[] 
-			| .requestedReviewer.login == "axkirillov"
-		)
-	)
-  ' | gomplate -d data=stdin:///in.json -i '
-  	{{- range ds "data" -}}
-      {{- .number | printf "\033[0;32m#%d\033[0m\t" -}}
-      {{- .title | printf "%s\t" -}}
-      {{- .headRefName | printf "%s\t" -}}
-      {{- .author.login | printf " by %s\t" -}}
-      {{- .state | printf "%s\n" -}}
-	{{- end -}}
-	' | column -t -s$'\t'
+pull_requests_that_need_my_review() {
+	template='{{range(pluck "node" .data.search.edges) -}}
+	{{tablerow (printf "\033[0;32m#%v\033[0m" .number) .title .author.login .headRefName -}}
+	{{end -}}
+	{{tablerender}}'
+
+	query='query {
+		search(query: "is:open is:pr review-requested:@me", type: ISSUE, first: 100) {
+			edges {
+				node {
+					... on PullRequest {
+						number
+						title
+						author {
+							login
+							... on User {
+								name
+							}
+						}
+						headRefName
+					}
+				}
+			}
+		}
+	}'
+
+	gh api graphql --paginate -f query="$query" -t "$template"
 }
 
 while test $# != 0; do
-  case "$1" in
-    --help|-h)
-      help
-      exit
-      ;;
-    -a)
-      assigned=1
-      ;;
-    *)
-      help >&2
-      exit 1
-    ;;
-  esac
-  shift
+	case "$1" in
+		--help|-h)
+			help
+			exit
+			;;
+		-r)
+			selected=$(fzf --ansi <<<"$(pull_requests_that_need_my_review)")
+			[ -n "$selected" ] || exit 1
+			gh pr checkout "${selected%% *}"
+			exit
+			;;
+		*)
+			if [ -n "$VAR" ]; then
+				help >&2
+				exit 1
+			fi
+	esac
+	shift
 done
-
-if [ -n "$assigned" ]; then
-	selected=$(fzf --ansi <<<"$(list_prs_that_need_my_review)")
-	[ -n "$selected" ] || exit 1
-	gh pr checkout "${selected%% *}"
-	exit
-fi
 
 selected=$(fzf --ansi <<<"$(list_prs)")
 [ -n "$selected" ] || exit 1
