@@ -12,7 +12,7 @@ brew install fzf gomplate
 ```
 
 ```
-gh extension install axkirillov/ghcopr
+gh extension install axkirillov/gh-copr
 ```
 
 then 
