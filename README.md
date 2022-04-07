@@ -7,22 +7,22 @@ https://github.com/mloberg/gh-prs
 
 https://github.com/AaronMoat/gh-reviews
 
-I added a -a flag to list prs that need my review
-
 this needs fzf
+
 ```
 brew install fzf
 ```
 
+install with gh
 ```
 gh extension install axkirillov/gh-copr
 ```
 
-then 
+then, to list checkout all PRs in a repo 
 ```
 gh copr
 ```
-or to see prs that need your review
+or to list only prs that need your review
 ```
 gh copr -r
 ```
