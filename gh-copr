@@ -27,7 +27,7 @@ fi
 
 pull_requests_that_need_my_review() {
 	template='{{range(pluck "node" .data.search.edges) -}}
-	{{tablerow (printf "\033[0;32m#%v\033[0m" .number) .title .author.login .headRefName -}}
+	{{tablerow (printf "#%v" .number | autocolor "green") .title (.author.login | autocolor "cyan") .headRefName -}}
 	{{end -}}
 	{{tablerender}}'
 
@@ -51,7 +51,7 @@ pull_requests_that_need_my_review() {
 		}
 	}'
 
-	gh api graphql --paginate -f query="$query" -t "$template"
+	GH_FORCE_TTY=100% gh api graphql --paginate -f query="$query" -t "$template"
 }
 
 while test $# != 0; do
