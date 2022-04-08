@@ -1,4 +1,4 @@
-# ghcopr
+# gh copr
 Fuzzy find and checkout GitHub pull requests
 
 inspiration taken from
